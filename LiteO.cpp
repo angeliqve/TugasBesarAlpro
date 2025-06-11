@@ -21,13 +21,15 @@ void printBoard: Hudayullah
 
 void titleCard();
 void topBottomBoard();
-void printBoard(string board[21][51]);
+void printBoard(string board[21][51], int score);
+void SwitchChoice(int choice);
 
 int main()
 {
 
-    titleCard();
+    int choice, score;
 
+    titleCard();
     string mainBoard[21][51];
 
     /*
@@ -45,7 +47,23 @@ int main()
         }
     }
 
-    printBoard(mainBoard);
+    printBoard(mainBoard, choice);
+
+    cout << R"(
+
+Menu: 
+1. Tambah Hadiah
+2. Tambah gerak O
+3. Simulasi Lite O
+4. Keluar
+Masukkan Menu: )";
+
+    cin >> choice;
+    SwitchChoice(choice);
+    if (choice == 4)
+    {
+        return 0;
+    }
 
     return 0;
 }
@@ -75,7 +93,7 @@ void topBottomBoard()
     cout << "|" << endl;
 }
 
-void printBoard(string board[21][51])
+void printBoard(string board[21][51], int score)
 {
     topBottomBoard();
 
@@ -90,5 +108,30 @@ void printBoard(string board[21][51])
     }
 
     topBottomBoard();
-    cout << endl;
+    cout << "\nSkor O: " << score << endl;
 }
+
+void SwitchChoice(int choice)
+{
+    switch (choice)
+    {
+    case 1:
+        cout << "ADD GIFT";
+        break;
+    case 2:
+        cout << "ADD MOVEMENT";
+        break;
+    case 3:
+        cout << "SIMULATION";
+        break;
+    case 4:
+        cout << "Exiting Program...";
+        break;
+    default:
+        cout << "ERROR! input tidak valid, coba lagi!";
+        SwitchChoice(choice);
+    }
+}
+
+/*
+ */
