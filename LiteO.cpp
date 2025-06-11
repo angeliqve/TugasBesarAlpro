@@ -6,6 +6,14 @@
 #include <windows.h>
 using namespace std;
 
+/*
+Credit:
+Main Program:
+Void TitleCard: Hudayulah
+void printBoard: Hudayullah
+*/
+
+
 void titleCard();
 void printBoard();
 
