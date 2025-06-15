@@ -20,6 +20,12 @@ typedef struct
     string y;
 } coordinates;
 
+struct Hadiah{
+    int x, y;
+    string nama;
+    int skor;
+};
+
 void titleCard();
 void topBottomBoard(string board[21][51]);
 void printBoard(string board[21][51], int score);
@@ -29,6 +35,9 @@ void wait(float x);
 void importtgerak(vector<coordinates> &tampungan);
 void animation(vector<coordinates> &tampungan, string mainBoard[21][51], int score);
 void editTgerak();
+void bacaHadiah();
+void simpanHadiah(Hadiah &h);
+void tambahHadiah();
 
 int main()
 {
@@ -246,5 +255,62 @@ void editTgerak()
     while (getline(gerak, baris))
     {
         isidata.push_back(baris);
+    }
+}
+
+vector<Hadiah> listHadiah;
+
+void bacaHadiah(){
+    ifstream file("thadiah.txt");
+
+    if(!file){
+        cout << "File tidak ditemukan atau gagal dibuka.\n";
+        return;
+    }
+
+    Hadiah h;
+    while(file >> h.x >> h.y >> h.nama >> h.skor){
+        listHadiah.push_back(h);
+    }
+    file.close();
+}
+
+void simpanHadiah(Hadiah &h){
+    ofstream file("thadiah.txt", ios::app); // append mode
+    if (!file){
+        cout << "Gagal menyimpan ke file.\n";
+        return;
+    }
+    file << h.x << " " << h.y << " " << h.nama << " " << h.skor << endl;
+
+    file << "## ## ## ##" << endl;
+    file.close();
+}
+
+void tambahHadiah(){
+    cout << "Isi hadiah saat ini:" << endl;
+    cout << "---------------------------" << endl;
+    cout << "|x    |y    |nama  |skor  |" << endl;
+    cout << "---------------------------" << endl;
+    for (auto &h : listHadiah) {
+        cout << "|" << h.x << "    |" << h.y << "    |" << h.nama << "  |" << h.skor << "  |" << endl;
+    }
+    cout << "---------------------------" << endl;
+
+    char lanjut;
+    cout << "ingin mengisi: (Y/T) ";
+    cin >> lanjut;
+    if (lanjut == 'Y' || lanjut == 'y') {
+        Hadiah h;
+        cout << "x: "; 
+        cin >> h.x;
+        cout << "y: "; 
+        cin >> h.y;
+        cout << "nama: "; 
+        cin >> h.nama;
+        cout << "skor: "; 
+        cin >> h.skor;
+        listHadiah.push_back(h);
+        simpanHadiah(h);
     }
 }
