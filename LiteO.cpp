@@ -50,6 +50,22 @@ int main()
         Jadi Diasumsikan bahwa tabel dihitung dimulai dari 0.
         jadi panjangnya adalah 0-20, dan lebarnya berukuran 0-50.
     */
+    string filename = "thadiah.txt";
+    vector<string> lines;
+    string line, pagar = "## ## ## ##";
+    int idxPagar = -1;
+
+    ifstream infile(filename);
+    if (infile.is_open()) {
+        while (getline(infile, line)) {
+            lines.push_back(line);
+            if (line == pagar) idxPagar = lines.size() - 1;
+        }
+        infile.close();
+    } else {
+        cout << "Tidak bisa membuka file untuk dibaca.\n";
+        return 1;
+    }
 
     int score = 0;
     coordinates movement[100];
