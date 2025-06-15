@@ -4,40 +4,47 @@
 #include <stdlib.h>
 #include <time.h>
 #include <windows.h>
+#include <vector>
 using namespace std;
 
 /*
 Anggota Kelompok:
-Angelique Gabriel
-Bintang Rahmadi
-Hudayullah Ayasya Khoirizal
-
-Credit:
-Main Program:
-Void TitleCard: Hudayulah
-void topBottom: Hudayullah
-void printBoard: Hudayullah
+1. Angelique Gabriel
+2. Bintang Rahmadi
+3. Hudayullah Ayasya Khoirizal
 */
 
+typedef struct
+{
+    string x;
+    string y;
+} coordinates;
+
 void titleCard();
-void topBottomBoard();
+void topBottomBoard(string board[21][51]);
 void printBoard(string board[21][51], int score);
-void SwitchChoice(int choice);
+void menu(char &choice);
+void SwitchChoice(char &choice);
+void wait(float x);
+void importtgerak(vector<coordinates> &tampungan);
+void animation(vector<coordinates> &tampungan, string mainBoard[21][51], int score);
+void editTgerak();
 
 int main()
 {
+    bool infLoop = true;
 
-    int choice, score;
-
-    titleCard();
     string mainBoard[21][51];
-
     /*
         Di modul tugas, disuruh untuk tabel berukuran 20, dan 50.
         Tapi di contoh tabel terhitung panjang 21, dan lebar 51.
         Jadi Diasumsikan bahwa tabel dihitung dimulai dari 0.
         jadi panjangnya adalah 0-20, dan lebarnya berukuran 0-50.
     */
+
+    int score = 0;
+    coordinates movement[100];
+    char choice;
 
     for (int i = 0; i < 21; i++)
     {
@@ -47,22 +54,25 @@ int main()
         }
     }
 
-    printBoard(mainBoard, choice);
-
-    cout << R"(
-
-Menu: 
-1. Tambah Hadiah
-2. Tambah gerak O
-3. Simulasi Lite O
-4. Keluar
-Masukkan Menu: )";
-
-    cin >> choice;
-    SwitchChoice(choice);
-    if (choice == 4)
+    while (infLoop)
     {
-        return 0;
+        vector<coordinates> tampungan;
+
+        importtgerak(tampungan);
+
+        titleCard();
+
+        printBoard(mainBoard, score);
+        menu(choice);
+
+        if (choice == '3')
+        {
+            animation(tampungan, mainBoard, score);
+        }
+        else if (choice == '4')
+        {
+            return 0;
+        }
     }
 
     return 0;
@@ -77,7 +87,6 @@ void titleCard()
 | |   | | __/ _ \______| | | |
 | |___| | ||  __/      \ \_/ /
 \_____/_|\__\___|       \___/ 
-                
 
 
 )";
@@ -100,6 +109,7 @@ void printBoard(string board[21][51], int score)
     for (int i = 0; i < 21; i++)
     {
         cout << "|";
+
         for (int j = 0; j < 51; j++)
         {
             cout << board[i][j];
@@ -111,27 +121,130 @@ void printBoard(string board[21][51], int score)
     cout << "\nSkor O: " << score << endl;
 }
 
-void SwitchChoice(int choice)
+void menu(char &choice)
+{
+    cout << R"(
+
+Menu: 
+1. Tambah Hadiah
+2. Tambah gerak O
+3. Simulasi Lite O
+4. Keluar
+Masukkan Menu: )";
+
+    cin >> choice;
+    SwitchChoice(choice);
+}
+
+void SwitchChoice(char &choice)
 {
     switch (choice)
     {
-    case 1:
+    case '1':
         cout << "ADD GIFT";
         break;
-    case 2:
+    case '2':
         cout << "ADD MOVEMENT";
         break;
-    case 3:
-        cout << "SIMULATION";
+    case '3':
         break;
-    case 4:
+    case '4':
         cout << "Exiting Program...";
         break;
     default:
         cout << "ERROR! input tidak valid, coba lagi!";
-        SwitchChoice(choice);
+        menu(choice);
     }
 }
 
-/*
- */
+void wait(float x)
+{
+    time_t start;
+    time_t current;
+    time(&start);
+    do
+        time(&current);
+    while (difftime(current, start) < x);
+}
+
+void importtgerak(vector<coordinates> &tampungan)
+{
+    coordinates data;
+    int jumlahData = 0;
+
+    fstream gerak("tgerak.txt", ios::in);
+    if (!gerak)
+    {
+        cout << "Gagal membuka file.\n";
+        return;
+    }
+    gerak >> data.x >> data.y;
+    if (data.x == "##")
+    {
+        cout << "arsip kosong" << endl;
+    }
+    else
+    {
+        do
+        {
+            tampungan.push_back(data);
+            gerak >> data.x >> data.y;
+
+        } while (data.x != "##");
+
+        gerak.close();
+    }
+}
+
+void animation(vector<coordinates> &tampungan, string mainBoard[21][51], int score)
+{
+    for (const auto &coord : tampungan)
+    {
+        // cout << "X: " << coord.x << "\tY: " << coord.y << endl;
+        int x = stoi(coord.x);
+        int y = stoi(coord.y);
+
+        titleCard();
+
+        for (int i = 0; i < 21; i++)
+        {
+            for (int j = 0; j < 51; j++)
+            {
+                mainBoard[i][j] = " ";
+            }
+        }
+
+        mainBoard[y][x] = "O";
+        printBoard(mainBoard, score);
+        wait(1);
+        system("cls");
+    }
+}
+
+void editTgerak()
+{
+    vector<string> isidata;
+    string baris;
+    int x, y;
+
+    cout << "\nInputkan koordinat gerak O: \n";
+    cout << "X: ";
+    cin >> x;
+    cout << "Y: ";
+    cin >> y;
+
+    string stringX = to_string(x);
+    string stringY = to_string(y);
+
+    fstream gerak("tgerak.txt", ios::in);
+    if (!gerak)
+    {
+        cout << "Gagal membuka file.\n";
+        return;
+    }
+
+    while (getline(gerak, baris))
+    {
+        isidata.push_back(baris);
+    }
+}
