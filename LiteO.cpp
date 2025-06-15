@@ -20,7 +20,7 @@ struct Hadiah     :
 vector listHadiah :
 void titlecard    : Huda
 void PrintBoard   : Huda
-void topBottom    : H
+void topBottom    : Huda
 void menu         : 
 void wait         : 
 void importtgerak : 
