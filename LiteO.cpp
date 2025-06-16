@@ -16,19 +16,19 @@ Anggota Kelompok:
 
 credit:
 struct coordinates: Huda
-struct Hadiah     :
+struct Hadiah     : Bintang
 vector listHadiah :
 void titlecard    : Huda
 void PrintBoard   : Huda
 void topBottom    : Huda
 void menu         : 
-void wait         : 
+void wait         : Bintang
 void importtgerak : 
 void animation    : Huda
 void editTgerak   : Huda
 void bacaHadiah   :
-void simpanHadiah :
-void tambahHadiah :
+void simpanHadiah : 
+void tambahHadiah : Bintang
 
 Main Program      : Angel, Bintang,& Huda
 
