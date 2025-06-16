@@ -21,9 +21,9 @@ vector listHadiah : Angel
 void titlecard    : Huda
 void PrintBoard   : Huda
 void topBottom    : Huda
-void menu         : 
+void menu         : Huda
 void wait         : Bintang
-void importtgerak : 
+void importtgerak : Huda
 void animation    : Huda
 void editTgerak   : Huda
 void bacaHadiah   : Angel
