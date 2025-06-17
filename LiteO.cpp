@@ -15,7 +15,7 @@ struct Hadiah
     int skor;
 };
 
-struct Gerak 
+struct Gerak
 {
     int x, y;
 };
@@ -37,7 +37,7 @@ void bacaGerak();
 void simpanGerak();
 void tambahGerak();
 
-int main() 
+int main()
 {
     cout << "Masukkan panjang papan: ";
     cin >> panjang;
@@ -47,26 +47,27 @@ int main()
 
     titleCard();
 
-    do {
+    do
+    {
         menu(pilihan);
-        switch (pilihan) 
+        switch (pilihan)
         {
-            case 1:
-                tambahHadiah();
-                break;
-            case 2:
-                tambahGerak();
-                break;
-            case 3:
-                animasiLiteO();
-                break;
-            case 4:
-                cout << "Exiting Program..." << endl;
-                return 0;
-                break;
-            default:
-                cout << "ERROR! Input tidak Valid! Coba Lagi.\n";
-                break;
+        case 1:
+            tambahHadiah();
+            break;
+        case 2:
+            tambahGerak();
+            break;
+        case 3:
+            animasiLiteO();
+            break;
+        case 4:
+            cout << "Exiting Program..." << endl;
+            return 0;
+            break;
+        default:
+            cout << "ERROR! Input tidak Valid! Coba Lagi.\n";
+            break;
         }
     } while (true);
     return 0;
@@ -96,34 +97,39 @@ void batasPapan()
     cout << "|" << endl;
 }
 
-void tampilkanPapan(int x, int y, int skor, vector<Hadiah> adaHadiah) 
+void tampilkanPapan(int x, int y, int skor, vector<Hadiah> adaHadiah)
 {
     batasPapan();
 
-    for (int i = 0; i < panjang; i++) 
+    for (int i = 0; i < panjang; i++)
     {
         cout << "|";
-        for (int j = 0; j < lebar; j++) 
+        for (int j = 0; j < lebar; j++)
         {
             bool adaIsi = false;
 
-            if (i == y && j == x) {
+            if (i == y && j == x)
+            {
                 cout << "O";
                 adaIsi = true;
-            } else {
-                for (auto &h : adaHadiah) 
+            }
+            else
+            {
+                for (auto &h : adaHadiah)
                 {
-                    if (h.x == j && h.y == i) {
+                    if (h.x == j && h.y == i)
+                    {
                         string isi = h.nama + to_string(h.skor);
                         cout << isi;
-                        j += isi.length() - 1; 
+                        j += isi.length() - 1;
                         adaIsi = true;
                         break;
                     }
                 }
             }
 
-            if (!adaIsi){
+            if (!adaIsi)
+            {
                 cout << " ";
             }
         }
@@ -135,7 +141,7 @@ void tampilkanPapan(int x, int y, int skor, vector<Hadiah> adaHadiah)
     cout << "Skor O: " << skor << endl;
 }
 
-void animasiLiteO() 
+void animasiLiteO()
 {
     bacaHadiah();
     bacaGerak();
@@ -144,12 +150,24 @@ void animasiLiteO()
     for (auto &g : daftarGerak)
     {
         system("cls");
-        for (auto it = aktif.begin(); it != aktif.end();) 
+        for (auto it = aktif.begin(); it != aktif.end();)
         {
-            if (it->x == g.x && it->y == g.y) {
-                skor += it->skor;
-                it = aktif.erase(it);
-            } else {
+            int panjangNama = it->nama.length() + to_string(it->skor).length();
+            bool collision = false;
+
+            for (int i = 0; i < panjangNama; ++i)
+            {
+                if (it->x + i == g.x && it->y == g.y)
+                {
+                    skor += it->skor;
+                    it = aktif.erase(it);
+                    collision = true;
+                    break;
+                }
+            }
+
+            if (!collision)
+            {
                 ++it;
             }
         }
@@ -164,25 +182,26 @@ void menu(int &pilihan)
     cin >> pilihan;
 }
 
-void wait(float x) 
+void wait(float x)
 {
     time_t start, current;
     time(&start);
-    do 
+    do
     {
         time(&current);
     } while (difftime(current, start) < x);
 }
 
-void simpanHadiah() 
+void simpanHadiah()
 {
     ofstream update("thadiah.txt");
-    if (!update){
+    if (!update)
+    {
         cout << "Gagal menyimpan ke file.\n";
         return;
     }
 
-    for (auto &h : daftarHadiah) 
+    for (auto &h : daftarHadiah)
     {
         update << h.x << ' ' << h.y << ' ' << h.nama << ' ' << h.skor << endl;
     }
@@ -191,24 +210,25 @@ void simpanHadiah()
     update.close();
 }
 
-void bacaHadiah() 
+void bacaHadiah()
 {
     daftarHadiah.clear();
     ifstream hadiah("thadiah.txt");
-    if(!hadiah){
+    if (!hadiah)
+    {
         cout << "File tidak ditemukan atau gagal dibuka.\n";
         return;
     }
 
     Hadiah h;
-    while (hadiah >> h.x >> h.y >> h.nama >> h.skor) 
+    while (hadiah >> h.x >> h.y >> h.nama >> h.skor)
     {
         daftarHadiah.push_back(h);
     }
     hadiah.close();
 }
 
-void tambahHadiah() 
+void tambahHadiah()
 {
     bacaHadiah();
     cout << "Isi hadiah saat ini:\n";
@@ -247,15 +267,16 @@ void tambahHadiah()
     }
 }
 
-void simpanGerak() 
+void simpanGerak()
 {
     ofstream update("tgerak.txt");
-    if (!update){
+    if (!update)
+    {
         cout << "Gagal menyimpan ke file.\n";
         return;
     }
-    
-    for (auto &g : daftarGerak) 
+
+    for (auto &g : daftarGerak)
     {
         update << g.x << ' ' << g.y << endl;
     }
@@ -263,24 +284,25 @@ void simpanGerak()
     update.close();
 }
 
-void bacaGerak() 
+void bacaGerak()
 {
     daftarGerak.clear();
     ifstream gerak("tgerak.txt");
-    if (!gerak){
+    if (!gerak)
+    {
         cout << "Gagal membuka file.\n";
         return;
     }
 
     Gerak g;
-    while (gerak >> g.x >> g.y) 
+    while (gerak >> g.x >> g.y)
     {
         daftarGerak.push_back(g);
     }
     gerak.close();
 }
 
-void tambahGerak() 
+void tambahGerak()
 {
     bacaGerak();
     cout << "Isi gerak saat ini:\n";
@@ -289,7 +311,7 @@ void tambahGerak()
     cout << "-------------\n";
     for (auto &g : daftarGerak)
     {
-        cout << "|" << setw(5) << g.x 
+        cout << "|" << setw(5) << g.x
              << "|" << setw(5) << g.y << "|\n";
     }
     cout << "-------------\n";
@@ -297,12 +319,12 @@ void tambahGerak()
     char lanjut;
     cout << "ingin mengisi? (Y/T): ";
     cin >> lanjut;
-    while (lanjut == 'Y' || lanjut == 'y') 
+    while (lanjut == 'Y' || lanjut == 'y')
     {
         Gerak g;
-        cout << "x: "; 
+        cout << "x: ";
         cin >> g.x;
-        cout << "y: "; 
+        cout << "y: ";
         cin >> g.y;
         daftarGerak.push_back(g);
         cout << "ingin mengisi lagi? (Y/T): ";
