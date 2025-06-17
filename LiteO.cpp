@@ -8,38 +8,6 @@
 #include <iomanip>
 using namespace std;
 
-/*
-Anggota Kelompok:
-1. Angelique Gabriel
-2. Bintang Rahmadi
-3. Hudayullah Ayasya Khoirizal
-
-credit:
-struct coordinates: Huda
-struct Hadiah     : Bintang
-vector listHadiah : Angel
-void titlecard    : Huda
-void PrintBoard   : Huda
-void topBottom    : Huda
-void menu         : Huda
-void wait         : Bintang
-void importtgerak : Huda
-void animation    : Huda
-void editTgerak   : Huda
-void bacaHadiah   : Angel
-void simpanHadiah : Angel
-void tambahHadiah : Bintang
-
-Main Program      : Angel, Bintang,& Huda
-
-*/
-
-typedef struct
-{
-    string x;
-    string y;
-} coordinates;
-
 struct Hadiah
 {
     int x, y;
@@ -47,64 +15,61 @@ struct Hadiah
     int skor;
 };
 
-vector<Hadiah> listHadiah;
+struct Gerak 
+{
+    int x, y;
+};
+
+int panjang, lebar;
+vector<Hadiah> daftarHadiah;
+vector<Gerak> daftarGerak;
 
 void titleCard();
-void topBottomBoard();
-void printBoard(string board[21][51], int score);
-void menu(char &choice);
+void batasPapan();
+void tampilkanPapan(int x, int y, int skor, vector<Hadiah> adaHadiah);
+void animasiLiteO();
+void menu(int &pilihan);
 void wait(float x);
-void importtgerak(vector<coordinates> &tampungan);
-void animation(vector<coordinates> &tampungan, string mainBoard[21][51], int score);
-void editTgerak();
 void bacaHadiah();
 void simpanHadiah(Hadiah &h);
 void tambahHadiah();
+void bacaGerak();
+void simpanGerak();
+void tambahGerak();
 
-int main()
+int main() 
 {
-    bool infLoop = true;
-    string mainBoard[21][51];
-    int score = 0;
-    char choice;
+    cout << "Masukkan panjang papan: ";
+    cin >> panjang;
+    cout << "Masukkan lebar papan: ";
+    cin >> lebar;
+    int pilihan;
 
-    for (int i = 0; i < 21; i++)
-        for (int j = 0; j < 51; j++)
-            mainBoard[i][j] = " ";
+    titleCard();
 
-    bacaHadiah(); // load hadiah on startup
-
-    while (infLoop)
-    {
-        vector<coordinates> tampungan;
-        importtgerak(tampungan);
-
-        titleCard();
-        printBoard(mainBoard, score);
-
-        do
+    do {
+        menu(pilihan);
+        switch (pilihan) 
         {
-            menu(choice);
-            switch (choice)
-            {
-            case '1':
+            case 1:
                 tambahHadiah();
                 break;
-            case '2':
-                editTgerak();
+            case 2:
+                tambahGerak();
                 break;
-            case '3':
-                animation(tampungan, mainBoard, score);
+            case 3:
+                animasiLiteO();
                 break;
-            case '4':
+            case 4:
                 cout << "Exiting Program..." << endl;
                 return 0;
                 break;
             default:
-                cout << "\nERROR! Input tidak Valid! Coba Lagi:\n\n";
-            }
-        } while (choice != '1' && choice != '2' && choice != '3' && choice != '4');
-    }
+                cout << "ERROR! Input tidak Valid! Coba Lagi.\n";
+                break;
+        }
+    } while (true);
+    return 0;
 }
 
 void titleCard()
@@ -121,195 +86,145 @@ void titleCard()
     // Generated using https://patorjk.com/software/taag/#p=display&f=Sub-Zero&t=Lite-O with the font Doom
 }
 
-void topBottomBoard()
+void batasPapan()
 {
     cout << "|";
-    for (int i = 0; i < 51; i++)
+    for (int i = 0; i < lebar; i++)
+    {
         cout << "-";
+    }
     cout << "|" << endl;
 }
 
-void printBoard(string board[21][51], int score)
+void tampilkanPapan(int x, int y, int skor, vector<Hadiah> adaHadiah) 
 {
-    topBottomBoard();
+    batasPapan();
 
-    for (int i = 0; i < 21; i++)
+    for (int i = 0; i < panjang; i++) 
     {
         cout << "|";
-        for (int j = 0; j < 51; j++)
+        for (int j = 0; j < lebar; j++) 
         {
-            cout << board[i][j];
+            bool adaIsi = false;
+
+            if (i == y && j == x) {
+                cout << "O";
+                adaIsi = true;
+            } else {
+                for (auto &h : adaHadiah) 
+                {
+                    if (h.x == j && h.y == i) {
+                        string isi = h.nama + to_string(h.skor);
+                        cout << isi;
+                        j += isi.length() - 1; 
+                        adaIsi = true;
+                        break;
+                    }
+                }
+            }
+
+            if (!adaIsi){
+                cout << " ";
+            }
         }
         cout << "|" << endl;
     }
 
-    topBottomBoard();
-    cout << "\nSkor O: " << score << endl;
+    batasPapan();
+
+    cout << "Skor O: " << skor << endl;
 }
 
-void menu(char &choice)
+void animasiLiteO() 
 {
-    cout << R"(
-Menu: 
-1. Tambah Hadiah
-2. Tambah gerak O
-3. Simulasi Lite O
-4. Keluar
-Masukkan Menu: )";
-
-    cin >> choice;
+    bacaHadiah();
+    bacaGerak();
+    int skor = 0;
+    vector<Hadiah> aktif = daftarHadiah;
+    for (auto &g : daftarGerak)
+    {
+        system("cls");
+        for (auto it = aktif.begin(); it != aktif.end();) 
+        {
+            if (it->x == g.x && it->y == g.y) {
+                skor += it->skor;
+                it = aktif.erase(it);
+            } else {
+                ++it;
+            }
+        }
+        tampilkanPapan(g.x, g.y, skor, aktif);
+        wait(1);
+    }
 }
 
-void wait(float x)
+void menu(int &pilihan)
+{
+    cout << "\nMenu:\n1. Tambah Hadiah\n2. Tambah Gerak O\n3. Simulasi Lite O\n4. Keluar\nMasukkan Menu: ";
+    cin >> pilihan;
+}
+
+void wait(float x) 
 {
     time_t start, current;
     time(&start);
-    do
+    do 
+    {
         time(&current);
-    while (difftime(current, start) < x);
+    } while (difftime(current, start) < x);
 }
 
-void importtgerak(vector<coordinates> &tampungan)
+void simpanHadiah() 
 {
-    coordinates data;
-
-    fstream gerak("tgerak.txt", ios::in);
-    if (!gerak)
-    {
-        cout << "Gagal membuka file.\n";
+    ofstream update("thadiah.txt");
+    if (!update){
+        cout << "Gagal menyimpan ke file.\n";
         return;
     }
 
-    gerak >> data.x >> data.y;
-    if (data.x == "##")
+    for (auto &h : daftarHadiah) 
     {
-        cout << "Arsip kosong." << endl;
+        update << h.x << ' ' << h.y << ' ' << h.nama << ' ' << h.skor << endl;
     }
-    else
-    {
-        do
-        {
-            tampungan.push_back(data);
-            gerak >> data.x >> data.y;
-        } while (data.x != "##");
 
-        gerak.close();
-    }
+    update << "## ## ## ##\n";
+    update.close();
 }
 
-void animation(vector<coordinates> &tampungan, string mainBoard[21][51], int score)
+void bacaHadiah() 
 {
-    for (const auto &coord : tampungan)
-    {
-        int x = stoi(coord.x);
-        int y = stoi(coord.y);
-
-        titleCard();
-
-        for (int i = 0; i < 21; i++)
-            for (int j = 0; j < 51; j++)
-                mainBoard[i][j] = " ";
-
-        mainBoard[y][x] = "O";
-        printBoard(mainBoard, score);
-        wait(1);
-        system("cls");
-    }
-}
-
-void editTgerak()
-{
-    vector<string> isidata;
-    string baris;
-    int x, y;
-
-    cout << "\nInputkan koordinat gerak O: \n";
-    cout << "X: ";
-    cin >> x;
-    cout << "Y: ";
-    cin >> y;
-
-    string stringX = to_string(x);
-    string stringY = to_string(y);
-
-    fstream gerak("tgerak.txt", ios::in);
-    if (!gerak)
-    {
-        cout << "Gagal membuka file.\n";
-        return;
-    }
-
-    while (getline(gerak, baris))
-    {
-        if (baris == "## ##")
-        {
-            break;
-        }
-        isidata.push_back(baris);
-    }
-    gerak.close();
-
-    isidata.push_back(stringX + " " + stringY);
-
-    fstream putUpdated("tgerak.txt", ios::out);
-    for (const string &line : isidata)
-    {
-        putUpdated << line << endl;
-    }
-
-    putUpdated << "## ##\n";
-    putUpdated.close();
-
-    cout << "\nPergerakkan Koordinat sudah diperbarui.\n";
-}
-
-void bacaHadiah()
-{
-    ifstream file("thadiah.txt");
-
-    if (!file)
-    {
+    daftarHadiah.clear();
+    ifstream hadiah("thadiah.txt");
+    if(!hadiah){
         cout << "File tidak ditemukan atau gagal dibuka.\n";
         return;
     }
 
     Hadiah h;
-    while (file >> h.x >> h.y >> h.nama >> h.skor)
+    while (hadiah >> h.x >> h.y >> h.nama >> h.skor) 
     {
-        listHadiah.push_back(h);
+        daftarHadiah.push_back(h);
     }
-    file.close();
+    hadiah.close();
 }
 
-void simpanHadiah(Hadiah &h)
+void tambahHadiah() 
 {
-    ofstream file("thadiah.txt", ios::app);
-    if (!file)
-    {
-        cout << "Gagal menyimpan ke file.\n";
-        return;
-    }
-
-    file << h.x << " " << h.y << " " << h.nama << " " << h.skor << endl;
-    file.close();
-}
-
-void tambahHadiah()
-{
+    bacaHadiah();
     cout << "Isi hadiah saat ini:\n";
-    cout << "-------------------------------\n";
-    cout << left << setw(6) << "|x" << setw(6) << "|y" << setw(10) << "|nama" << setw(6) << "|skor|\n";
-    cout << "-------------------------------\n";
+    cout << "---------------------------\n";
+    cout << "|  x  |  y  | nama | skor |\n";
+    cout << "---------------------------\n";
 
-    for (auto &h : listHadiah)
+    for (auto &h : daftarHadiah)
     {
-        cout << "|" << setw(5) << h.x
-             << "|" << setw(5) << h.y
-             << "|" << setw(9) << h.nama
-             << "|" << setw(5) << h.skor << "|\n";
+        cout << "|" << left << setw(5) << h.x
+             << "|" << left << setw(5) << h.y
+             << "|" << left << setw(6) << h.nama
+             << "|" << left << setw(6) << h.skor << "|\n";
     }
 
-    cout << "-------------------------------\n";
+    cout << "---------------------------\n";
 
     char lanjut;
     cout << "Ingin mengisi? (Y/T): ";
@@ -327,10 +242,75 @@ void tambahHadiah()
         cout << "skor: ";
         cin >> h.skor;
 
-        listHadiah.push_back(h);
-        simpanHadiah(h);
+        daftarHadiah.push_back(h);
+        simpanHadiah();
     }
 }
+
+void simpanGerak() 
+{
+    ofstream update("tgerak.txt");
+    if (!update){
+        cout << "Gagal menyimpan ke file.\n";
+        return;
+    }
+    
+    for (auto &g : daftarGerak) 
+    {
+        update << g.x << ' ' << g.y << endl;
+    }
+    update << "## ##\n";
+    update.close();
+}
+
+void bacaGerak() 
+{
+    daftarGerak.clear();
+    ifstream gerak("tgerak.txt");
+    if (!gerak){
+        cout << "Gagal membuka file.\n";
+        return;
+    }
+
+    Gerak g;
+    while (gerak >> g.x >> g.y) 
+    {
+        daftarGerak.push_back(g);
+    }
+    gerak.close();
+}
+
+void tambahGerak() 
+{
+    bacaGerak();
+    cout << "Isi gerak saat ini:\n";
+    cout << "-------------\n";
+    cout << "|  x  |  y  |\n";
+    cout << "-------------\n";
+    for (auto &g : daftarGerak)
+    {
+        cout << "|" << setw(5) << g.x 
+             << "|" << setw(5) << g.y << "|\n";
+    }
+    cout << "-------------\n";
+
+    char lanjut;
+    cout << "ingin mengisi? (Y/T): ";
+    cin >> lanjut;
+    while (lanjut == 'Y' || lanjut == 'y') 
+    {
+        Gerak g;
+        cout << "x: "; 
+        cin >> g.x;
+        cout << "y: "; 
+        cin >> g.y;
+        daftarGerak.push_back(g);
+        cout << "ingin mengisi lagi? (Y/T): ";
+        cin >> lanjut;
+    }
+    simpanGerak();
+}
+
 /*
 BackUp incase anything goes wrong:
 
@@ -365,4 +345,3 @@ thadiah:
 ## ## ## ##
 
  */
-
