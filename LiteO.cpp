@@ -8,32 +8,6 @@
 #include <iomanip>
 using namespace std;
 
-/*
-Anggota Kelompok:
-1. Angelique Gabriel
-2. Bintang Rahmadi
-3. Hudayullah Ayasya Khoirizal
-
-credit:
-struct coordinates: Huda
-struct Hadiah     : Bintang
-vector listHadiah : Angel
-void titlecard    : Huda
-void PrintBoard   : Huda
-void topBottom    : Huda
-void menu         : Huda
-void wait         : Bintang
-void importtgerak : Huda
-void animation    : Huda
-void editTgerak   : Huda
-void bacaHadiah   : Angel
-void simpanHadiah : Angel
-void tambahHadiah : Bintang
-
-Main Program      : Angel, Bintang,& Huda
-
-*/
-
 struct Hadiah
 {
     int x, y;
@@ -186,7 +160,7 @@ void animasiLiteO()
 
 void menu(int &pilihan)
 {
-    cout << "\nMenu:\n1. Tambah Hadiah\n2. Tambah Gerak O\n3. Simulasi Lite O\n4. Keluar\nMasukkan Pilihan Menu: ";
+    cout << "\nMenu:\n1. Tambah Hadiah\n2. Tambah Gerak O\n3. Simulasi Lite O\n4. Keluar\nMasukkan Menu: ";
     cin >> pilihan;
 }
 
