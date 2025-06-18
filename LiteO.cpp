@@ -80,13 +80,13 @@ int main()
 string warnaRandom() 
 {
     // ANSI colors
-    int kodeWarna = rand() % 6 + 31;
+    int kodeWarna = rand() % 6 + 91;
     return "\033[" + to_string(kodeWarna) + "m";
 }
 
 void titleCard()
 {
-    cout << R"(
+    cout << "\033[93m" << R"(
  _     _ _              _____ 
 | |   (_) |            |  _  |
 | |    _| |_ ___ ______| | | |
@@ -94,7 +94,7 @@ void titleCard()
 | |___| | ||  __/      \ \_/ /
 \_____/_|\__\___|       \___/ 
                               
-)";
+)" << "\033[0m";
     // Generated using https://patorjk.com/software/taag/#p=display&f=Sub-Zero&t=Lite-O with the font Doom
 }
 
