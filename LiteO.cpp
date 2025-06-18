@@ -1,9 +1,9 @@
 #include <iostream>
 #include <string>
 #include <fstream>
+#include <sstream>
 #include <stdlib.h>
 #include <time.h>
-#include <windows.h>
 #include <vector>
 #include <iomanip>
 using namespace std;
@@ -13,6 +13,7 @@ struct Hadiah
     int x, y;
     string nama;
     int skor;
+    string warna;
 };
 
 struct Gerak
@@ -24,9 +25,10 @@ int panjang, lebar;
 vector<Hadiah> daftarHadiah;
 vector<Gerak> daftarGerak;
 
+string warnaRandom();
 void titleCard();
 void batasPapan();
-void tampilkanPapan(int x, int y, int skor, vector<Hadiah> adaHadiah);
+void tampilkanPapan(int x, int y, int skor, vector<Hadiah> adaHadiah, string warnaO);
 void animasiLiteO();
 void menu(int &pilihan);
 void wait(float x);
@@ -39,6 +41,8 @@ void tambahGerak();
 
 int main()
 {
+    srand(time(0));
+
     cout << "Masukkan panjang papan: ";
     cin >> panjang;
     cout << "Masukkan lebar papan: ";
@@ -73,6 +77,13 @@ int main()
     return 0;
 }
 
+string warnaRandom() 
+{
+    // ANSI colors
+    int kodeWarna = rand() % 6 + 31;
+    return "\033[" + to_string(kodeWarna) + "m";
+}
+
 void titleCard()
 {
     cout << R"(
@@ -97,7 +108,7 @@ void batasPapan()
     cout << "|" << endl;
 }
 
-void tampilkanPapan(int x, int y, int skor, vector<Hadiah> adaHadiah)
+void tampilkanPapan(int x, int y, int skor, vector<Hadiah> adaHadiah, string warnaO)
 {
     batasPapan();
 
@@ -110,7 +121,7 @@ void tampilkanPapan(int x, int y, int skor, vector<Hadiah> adaHadiah)
 
             if (i == y && j == x)
             {
-                cout << "O";
+                cout << warnaO << "O" << "\033[0m";
                 adaIsi = true;
             }
             else
@@ -120,7 +131,7 @@ void tampilkanPapan(int x, int y, int skor, vector<Hadiah> adaHadiah)
                     if (h.x == j && h.y == i)
                     {
                         string isi = h.nama + to_string(h.skor);
-                        cout << isi;
+                        cout << h.warna << isi << "\033[0m";
                         j += isi.length() - 1;
                         adaIsi = true;
                         break;
@@ -146,6 +157,8 @@ void animasiLiteO()
     bacaHadiah();
     bacaGerak();
     int skor = 0;
+    string warnaO = warnaRandom();
+
     vector<Hadiah> aktif = daftarHadiah;
     for (auto &g : daftarGerak)
     {
@@ -171,7 +184,7 @@ void animasiLiteO()
                 ++it;
             }
         }
-        tampilkanPapan(g.x, g.y, skor, aktif);
+        tampilkanPapan(g.x, g.y, skor, aktif, warnaO);
         wait(1);
     }
 }
@@ -220,10 +233,20 @@ void bacaHadiah()
         return;
     }
 
-    Hadiah h;
-    while (hadiah >> h.x >> h.y >> h.nama >> h.skor)
+    string baris;
+    while (getline(hadiah, baris))
     {
-        daftarHadiah.push_back(h);
+        if (baris == "## ## ## ##")
+        {
+            break;
+        }
+
+        Hadiah h;
+        istringstream iss(baris);
+        if(iss >> h.x >> h.y >> h.nama >> h.skor){
+            h.warna = warnaRandom();
+            daftarHadiah.push_back(h);
+        }
     }
     hadiah.close();
 }
@@ -294,10 +317,18 @@ void bacaGerak()
         return;
     }
 
-    Gerak g;
-    while (gerak >> g.x >> g.y)
+    string baris;
+    while (getline(gerak, baris))
     {
-        daftarGerak.push_back(g);
+        if(baris == "## ##"){
+            break;
+        }
+        Gerak g;
+        istringstream iss(baris);
+        if (iss >> g.x >> g.y)
+        {
+            daftarGerak.push_back(g);
+        }
     }
     gerak.close();
 }
@@ -326,7 +357,9 @@ void tambahGerak()
         cin >> g.x;
         cout << "y: ";
         cin >> g.y;
+
         daftarGerak.push_back(g);
+    
         cout << "ingin mengisi lagi? (Y/T): ";
         cin >> lanjut;
     }
